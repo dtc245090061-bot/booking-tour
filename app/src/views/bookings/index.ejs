@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Quản Lý Đặt Tour</h1>
+      <p class="page-subtitle">Danh sách tất cả các đặt chỗ</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="table-actions">
+        <a href="/bookings/new" class="btn btn-primary">+ Tạo Đặt Chỗ Mới</a>
+        <div class="table-info"><%= bookings.length %> đặt chỗ</div>
+      </div>
+
+      <% if (bookings.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>Chưa có đặt chỗ nào</h3>
+          <a href="/tours" class="btn btn-primary">Xem danh sách tour để đặt ngay</a>
+        </div>
+      <% } else { %>
+      <div class="table-wrap">
+        <table class="data-table" id="bookingsTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Khách Hàng</th>
+              <th>Tour</th>
+              <th>Ngày Khởi Hành</th>
+              <th>Số Người</th>
+              <th>Tổng Tiền</th>
+              <th>Trạng Thái</th>
+              <th>Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bookings.forEach(b => { %>
+            <tr>
+              <td><strong>#<%= b.id %></strong></td>
+              <td>
+                <div class="customer-cell">
+                  <div class="customer-name"><%= b.full_name %></div>
+                  <div class="customer-email"><%= b.email %></div>
+                </div>
+              </td>
+              <td>
+                <div><%= b.tour_name %></div>
+                <small class="text-muted">📍 <%= b.destination %></small>
+              </td>
+              <td><%= new Date(b.departure_date).toLocaleDateString('vi-VN') %></td>
+              <td><%= b.num_people %> người</td>
+              <td><strong><%= parseInt(b.total_price).toLocaleString('vi-VN') %> ₫</strong></td>
+              <td>
+                <span class="status-badge status-<%= b.status %>">
+                  <%= b.status === 'pending' ? '⏳ Chờ xác nhận' : b.status === 'confirmed' ? '✅ Đã xác nhận' : '❌ Đã hủy' %>
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <a href="/bookings/<%= b.id %>" class="btn btn-ghost btn-xs">Chi tiết</a>
+                  <form action="/bookings/<%= b.id %>/status?_method=PUT" method="POST" style="display:inline">
+                    <% if (b.status === 'pending') { %>
+                    <input type="hidden" name="status" value="confirmed" />
+                    <button type="submit" class="btn btn-success btn-xs">Xác nhận</button>
+                    <% } else if (b.status === 'confirmed') { %>
+                    <input type="hidden" name="status" value="cancelled" />
+                    <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Hủy đặt chỗ này?')">Hủy</button>
+                    <% } %>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

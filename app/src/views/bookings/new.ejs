@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Form Đặt Tour</h1>
+      <p class="page-subtitle">Điền thông tin để hoàn tất đặt chỗ</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container booking-layout">
+      <!-- Form -->
+      <div class="booking-form-wrap">
+        <div class="card">
+          <h2>📝 Thông Tin Đặt Tour</h2>
+
+          <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert alert-danger"><strong>❌ Lỗi:</strong> <%= error %></div>
+          <% } %>
+
+          <form action="/bookings" method="POST" class="booking-form" id="bookingForm">
+            <% if (schedule) { %>
+            <input type="hidden" name="schedule_id" value="<%= schedule.id %>" />
+            <% } %>
+
+            <div class="form-section">
+              <h3>👤 Thông Tin Khách Hàng</h3>
+              <div class="form-group">
+                <label for="full_name">Họ và tên *</label>
+                <input type="text" id="full_name" name="full_name" required placeholder="Nguyễn Văn A" class="form-input" />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="email">Email *</label>
+                  <input type="email" id="email" name="email" required placeholder="email@example.com" class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label for="phone">Số điện thoại *</label>
+                  <input type="tel" id="phone" name="phone" required placeholder="0123 456 789" class="form-input" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <h3>🗓 Thông Tin Đặt Chỗ</h3>
+              <% if (!schedule) { %>
+              <div class="form-group">
+                <label for="schedule_id">Mã lịch khởi hành *</label>
+                <input type="number" id="schedule_id" name="schedule_id" required placeholder="Nhập ID lịch khởi hành" class="form-input" />
+                <span class="form-hint">Vui lòng chọn tour và lịch khởi hành từ <a href="/tours">trang danh sách tour</a></span>
+              </div>
+              <% } %>
+              <div class="form-group">
+                <label for="num_people">Số người *</label>
+                <input type="number" id="num_people" name="num_people" required min="1" max="<%= schedule ? schedule.available_slots : 20 %>" value="1" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label for="notes">Ghi chú</label>
+                <textarea id="notes" name="notes" placeholder="Yêu cầu đặc biệt, chế độ ăn, v.v..." class="form-textarea" rows="3"></textarea>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBtn">
+              ✅ Xác Nhận Đặt Tour
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Tour summary sidebar -->
+      <% if (tour) { %>
+      <div class="booking-sidebar">
+        <div class="card tour-summary">
+          <h3>📋 Thông Tin Tour</h3>
+          <img src="<%= tour.image_url || '/css/placeholder.jpg' %>" alt="<%= tour.tour_name %>" class="summary-img" onerror="this.src='/css/placeholder.jpg'" />
+          <div class="summary-body">
+            <h4><%= tour.tour_name %></h4>
+            <p>📍 <%= tour.destination %></p>
+            <p>⏱ <%= tour.duration %> ngày</p>
+            <% if (schedule) { %>
+            <p>🗓 Khởi hành: <%= new Date(schedule.departure_date).toLocaleDateString('vi-VN') %></p>
+            <p>👥 Còn <%= schedule.available_slots %> chỗ trống</p>
+            <% } %>
+            <div class="summary-price">
+              <span>Giá/người:</span>
+              <strong><%= parseInt(tour.price).toLocaleString('vi-VN') %> ₫</strong>
+            </div>
+            <div class="total-calc" id="totalCalc">
+              <span>Tổng tiền dự kiến:</span>
+              <strong id="totalPrice"><%= parseInt(tour.price).toLocaleString('vi-VN') %> ₫</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  <script>
+    // Tính tổng tiền động
+    const numPeopleInput = document.getElementById('num_people');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const unitPrice = <%= tour ? tour.price : 0 %>;
+    if (numPeopleInput && totalPriceEl && unitPrice) {
+      numPeopleInput.addEventListener('input', () => {
+        const total = unitPrice * parseInt(numPeopleInput.value || 1);
+        totalPriceEl.textContent = total.toLocaleString('vi-VN') + ' ₫';
+      });
+    }
+  </script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

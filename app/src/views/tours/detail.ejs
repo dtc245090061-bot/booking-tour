@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-header">
+    <div class="container">
+      <a href="/tours" class="breadcrumb">← Quay lại danh sách tour</a>
+      <h1 class="page-title"><%= tour.name %></h1>
+      <div class="tour-meta-header">
+        <span class="badge badge-primary">📍 <%= tour.destination %></span>
+        <span class="badge badge-secondary">⏱ <%= tour.duration %> ngày</span>
+        <span class="badge badge-accent">👥 Tối đa <%= tour.max_slots %> người</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container tour-detail-layout">
+      <!-- Left: Tour info -->
+      <div class="tour-detail-main">
+        <div class="tour-detail-img">
+          <img src="<%= tour.image_url || '/css/placeholder.jpg' %>" alt="<%= tour.name %>" onerror="this.src='/css/placeholder.jpg'" />
+        </div>
+        <div class="card">
+          <h2>📋 Mô Tả Tour</h2>
+          <p class="tour-full-desc"><%= tour.description || 'Tour du lịch tuyệt vời tại ' + tour.destination %></p>
+        </div>
+      </div>
+
+      <!-- Right: Booking sidebar -->
+      <div class="tour-detail-sidebar">
+        <div class="card price-card">
+          <div class="price-big"><%= parseInt(tour.price).toLocaleString('vi-VN') %> ₫</div>
+          <div class="price-per">/ người</div>
+
+          <h3 style="margin-top:1.5rem">🗓 Lịch Khởi Hành</h3>
+          <% if (schedules.length === 0) { %>
+            <div class="alert alert-warning">Hiện chưa có lịch khởi hành. Vui lòng liên hệ để biết thêm.</div>
+          <% } else { %>
+          <div class="schedule-list">
+            <% schedules.forEach(sch => { %>
+            <div class="schedule-item">
+              <div class="schedule-date">
+                📅 <%= new Date(sch.departure_date).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+              </div>
+              <div class="schedule-slots"><%= sch.available_slots %> chỗ còn</div>
+              <a href="/bookings/new?schedule_id=<%= sch.id %>" class="btn btn-primary btn-sm" style="width:100%;text-align:center">Đặt Ngay</a>
+            </div>
+            <% }) %>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="card">
+          <h3>✅ Bao Gồm</h3>
+          <ul class="include-list">
+            <li>✔ Xe đưa đón theo lịch trình</li>
+            <li>✔ Khách sạn tiêu chuẩn</li>
+            <li>✔ Hướng dẫn viên tiếng Việt</li>
+            <li>✔ Bảo hiểm du lịch</li>
+            <li>✔ Ăn sáng mỗi ngày</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

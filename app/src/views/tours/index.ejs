@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Danh sách các tour du lịch hấp dẫn tại TourViet" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Danh Sách Tour Du Lịch</h1>
+      <p class="page-subtitle">Khám phá <%= tours.length %> tour hấp dẫn</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <!-- Filter Form -->
+      <div class="filter-card">
+        <form action="/tours" method="GET" class="filter-form">
+          <div class="filter-group">
+            <label>Điểm đến</label>
+            <input type="text" name="destination" value="<%= filters.destination || '' %>" placeholder="Hà Nội, Đà Nẵng, Phú Quốc..." class="form-input" />
+          </div>
+          <div class="filter-group">
+            <label>Giá từ (₫)</label>
+            <input type="number" name="minPrice" value="<%= filters.minPrice || '' %>" placeholder="0" class="form-input" />
+          </div>
+          <div class="filter-group">
+            <label>Giá đến (₫)</label>
+            <input type="number" name="maxPrice" value="<%= filters.maxPrice || '' %>" placeholder="10,000,000" class="form-input" />
+          </div>
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-primary">Lọc</button>
+            <a href="/tours" class="btn btn-ghost">Xóa lọc</a>
+          </div>
+        </form>
+      </div>
+
+      <% if (tours.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>Không tìm thấy tour</h3>
+          <p>Thử thay đổi điều kiện tìm kiếm hoặc <a href="/tours">xem tất cả tour</a></p>
+        </div>
+      <% } else { %>
+      <div class="tours-grid">
+        <% tours.forEach(tour => { %>
+        <div class="tour-card">
+          <div class="tour-img-wrap">
+            <img src="<%= tour.image_url || '/css/placeholder.jpg' %>" alt="<%= tour.name %>" class="tour-img" onerror="this.src='/css/placeholder.jpg'" />
+            <div class="tour-badge"><%= tour.duration %> ngày</div>
+            <div class="tour-slots"><%= tour.max_slots %> chỗ</div>
+          </div>
+          <div class="tour-body">
+            <div class="tour-destination">📍 <%= tour.destination %></div>
+            <h3 class="tour-name"><%= tour.name %></h3>
+            <p class="tour-desc"><%= tour.description ? tour.description.substring(0, 120) + '...' : 'Hành trình tuyệt vời đang chờ bạn khám phá.' %></p>
+            <div class="tour-footer">
+              <div class="tour-price">
+                <span class="price-label">Từ</span>
+                <span class="price-value"><%= parseInt(tour.price).toLocaleString('vi-VN') %> ₫</span>
+              </div>
+              <a href="/tours/<%= tour.id %>" class="btn btn-primary btn-sm">Xem Chi Tiết</a>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

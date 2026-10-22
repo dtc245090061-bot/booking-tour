@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-header">
+    <div class="container">
+      <a href="/bookings" class="breadcrumb">← Quay lại danh sách</a>
+      <h1 class="page-title">Đặt Chỗ #<%= booking.id %></h1>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container booking-detail-layout">
+      <% if (success) { %>
+      <div class="alert alert-success" style="margin-bottom:1.5rem">
+        🎉 <strong>Đặt tour thành công!</strong> Chúng tôi sẽ liên hệ với bạn qua email để xác nhận.
+      </div>
+      <% } %>
+
+      <div class="card">
+        <div class="booking-detail-header">
+          <div>
+            <h2>Thông Tin Đặt Chỗ</h2>
+            <p class="text-muted">Ngày đặt: <%= new Date(booking.created_at).toLocaleDateString('vi-VN') %></p>
+          </div>
+          <span class="status-badge status-<%= booking.status %> status-lg">
+            <%= booking.status === 'pending' ? '⏳ Chờ xác nhận' : booking.status === 'confirmed' ? '✅ Đã xác nhận' : '❌ Đã hủy' %>
+          </span>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-section">
+            <h3>👤 Khách Hàng</h3>
+            <div class="detail-row"><span>Họ tên:</span><strong><%= booking.full_name %></strong></div>
+            <div class="detail-row"><span>Email:</span><strong><%= booking.email %></strong></div>
+            <div class="detail-row"><span>Điện thoại:</span><strong><%= booking.phone %></strong></div>
+          </div>
+          <div class="detail-section">
+            <h3>✈ Tour Du Lịch</h3>
+            <div class="detail-row"><span>Tên tour:</span><strong><%= booking.tour_name %></strong></div>
+            <div class="detail-row"><span>Điểm đến:</span><strong>📍 <%= booking.destination %></strong></div>
+            <div class="detail-row"><span>Thời gian:</span><strong><%= booking.duration %> ngày</strong></div>
+            <div class="detail-row"><span>Ngày khởi hành:</span><strong>📅 <%= new Date(booking.departure_date).toLocaleDateString('vi-VN') %></strong></div>
+          </div>
+          <div class="detail-section">
+            <h3>💰 Chi Phí</h3>
+            <div class="detail-row"><span>Số người:</span><strong><%= booking.num_people %> người</strong></div>
+            <div class="detail-row total-row"><span>Tổng tiền:</span><strong class="total-amount"><%= parseInt(booking.total_price).toLocaleString('vi-VN') %> ₫</strong></div>
+          </div>
+          <% if (booking.notes) { %>
+          <div class="detail-section full-width">
+            <h3>📝 Ghi Chú</h3>
+            <p><%= booking.notes %></p>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="detail-actions">
+          <a href="/bookings" class="btn btn-ghost">← Quay lại</a>
+          <% if (booking.status === 'pending') { %>
+          <form action="/bookings/<%= booking.id %>/status?_method=PUT" method="POST" style="display:inline">
+            <input type="hidden" name="status" value="confirmed" />
+            <button type="submit" class="btn btn-success">✅ Xác Nhận Đặt Chỗ</button>
+          </form>
+          <% } %>
+          <a href="/tours" class="btn btn-primary">Xem Thêm Tour</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

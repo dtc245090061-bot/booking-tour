@@ -1,0 +1,136 @@
+services:
+
+  # ╔══════════════════════════════════════╗
+  # ║     DATABASE LAYER                   ║
+  # ╚══════════════════════════════════════╝
+  postgres:
+    image: postgres:15-alpine
+    container_name: booking-tour-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_ADMIN_USER}
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_ADMIN_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '0.5'
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: booking-tour-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'True'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: '0.3'
+
+  # ╔══════════════════════════════════════╗
+  # ║     APPLICATION LAYER                ║
+  # ╚══════════════════════════════════════╝
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: booking-tour-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_APP_USER}
+      DB_PASSWORD: ${DB_APP_PASSWORD}
+      SESSION_SECRET: ${SESSION_SECRET}
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ╔══════════════════════════════════════╗
+  # ║     REVERSE PROXY                    ║
+  # ╚══════════════════════════════════════╝
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: booking-tour-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - frontend
+    depends_on:
+      - app
+      - pgadmin
+    volumes:
+      - nginx_logs:/var/log/nginx
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: '0.2'
+
+# ╔══════════════════════════════════════════╗
+# ║     NETWORKS (isolation - hardening)     ║
+# ╚══════════════════════════════════════════╝
+networks:
+  frontend:
+    driver: bridge
+    name: tourviet_frontend
+  backend:
+    driver: bridge
+    name: tourviet_backend
+    internal: true        # No external access (hardening)
+
+# ╔══════════════════════════════════════╗
+# ║     VOLUMES                          ║
+# ╚══════════════════════════════════════╝
+volumes:
+  postgres_data:
+    name: tourviet_postgres_data
+  pgadmin_data:
+    name: tourviet_pgadmin_data
+  nginx_logs:
+    name: tourviet_nginx_logs

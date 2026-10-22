@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="<%= typeof description !== 'undefined' ? description : 'TourViet - Hệ thống đặt tour du lịch Việt Nam' %>" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="logo">
+        <span class="logo-icon">✈</span>
+        <span class="logo-text">Tour<span class="accent">Viet</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/" class="nav-link">Trang Chủ</a></li>
+        <li><a href="/tours" class="nav-link">Danh Sách Tour</a></li>
+        <li><a href="/bookings" class="nav-link">Đặt Chỗ</a></li>
+        <li><a href="/customers" class="nav-link">Khách Hàng</a></li>
+      </ul>
+      <a href="/bookings/new" class="btn btn-primary btn-sm">Đặt Tour Ngay</a>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <%- body %>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo-icon">✈</span>
+        <span class="logo-text">Tour<span class="accent">Viet</span></span>
+        <p class="footer-desc">Khám phá vẻ đẹp Việt Nam cùng chúng tôi</p>
+      </div>
+      <div class="footer-links">
+        <h4>Liên kết nhanh</h4>
+        <ul>
+          <li><a href="/tours">Tất cả tour</a></li>
+          <li><a href="/bookings/new">Đặt tour</a></li>
+          <li><a href="/health">Health Check</a></li>
+          <li><a href="/metrics">Metrics</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Liên hệ</h4>
+        <p>📍 123 Đường Du Lịch, Hà Nội</p>
+        <p>📞 0123 456 789</p>
+        <p>✉ info@tourviet.vn</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 TourViet. Đồ án môn Triển khai & Quản trị HTPM.</p>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
