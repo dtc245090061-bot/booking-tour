@@ -38,14 +38,14 @@
           </div>
           <div class="filter-actions">
             <button type="submit" class="btn btn-primary">Lọc</button>
-            <a href="/tours" class="btn btn-ghost">Xóa lọc</a>
+            <a href="/tours" class="btn btn-primary">Xóa lọc</a>
           </div>
         </form>
       </div>
 
       <% if (tours.length === 0) { %>
         <div class="empty-state">
-          <div class="empty-icon">🔍</div>
+          <div class="empty-icon"></div>
           <h3>Không tìm thấy tour</h3>
           <p>Thử thay đổi điều kiện tìm kiếm hoặc <a href="/tours">xem tất cả tour</a></p>
         </div>
@@ -59,7 +59,7 @@
             <div class="tour-slots"><%= tour.max_slots %> chỗ</div>
           </div>
           <div class="tour-body">
-            <div class="tour-destination">📍 <%= tour.destination %></div>
+            <div class="tour-destination"><%= tour.destination %></div>
             <h3 class="tour-name"><%= tour.name %></h3>
             <p class="tour-desc"><%= tour.description ? tour.description.substring(0, 120) + '...' : 'Hành trình tuyệt vời đang chờ bạn khám phá.' %></p>
             <div class="tour-footer">

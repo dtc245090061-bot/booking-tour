@@ -13,26 +13,113 @@
 
   <div class="page-header">
     <div class="container">
-      <a href="/tours" class="breadcrumb">← Quay lại danh sách tour</a>
+      <a href="/tours" class="breadcrumb">
+        <svg class="breadcrumb-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Quay lại danh sách tour</span>
+      </a>
       <h1 class="page-title"><%= tour.name %></h1>
       <div class="tour-meta-header">
-        <span class="badge badge-primary">📍 <%= tour.destination %></span>
-        <span class="badge badge-secondary">⏱ <%= tour.duration %> ngày</span>
-        <span class="badge badge-accent">👥 Tối đa <%= tour.max_slots %> người</span>
+        <span class="badge badge-primary">Điểm đến: <%= tour.destination %></span>
+        <span class="badge badge-secondary">Thời gian: <%= tour.duration %> ngày</span>
+        <span class="badge badge-accent">Tối đa: <%= tour.max_slots %> người</span>
       </div>
     </div>
   </div>
 
   <section class="section">
     <div class="container tour-detail-layout">
-      <!-- Left: Tour info -->
+      <!-- Left: Tour info & Reviews -->
       <div class="tour-detail-main">
+        <% if (typeof reviewed !== 'undefined' && reviewed) { %>
+        <div class="alert alert-success" style="margin-bottom:1.5rem">
+          <strong>Cảm ơn bạn!</strong> Đánh giá của bạn về tour này đã được ghi nhận.
+        </div>
+        <% } %>
+
         <div class="tour-detail-img">
           <img src="<%= tour.image_url || '/css/placeholder.jpg' %>" alt="<%= tour.name %>" onerror="this.src='/css/placeholder.jpg'" />
         </div>
-        <div class="card">
-          <h2>📋 Mô Tả Tour</h2>
+        <div class="card" style="margin-bottom: 2rem;">
+          <h2>Mô Tả Tour</h2>
           <p class="tour-full-desc"><%= tour.description || 'Tour du lịch tuyệt vời tại ' + tour.destination %></p>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="card" id="reviewsSection">
+          <div class="reviews-header-row">
+            <div>
+              <h2>Đánh Giá Từ Khách Hàng (<%= reviews ? reviews.length : 0 %>)</h2>
+              <p class="text-muted" style="font-size:0.9rem">Nhận xét thực tế từ du khách đã trải nghiệm tour</p>
+            </div>
+            <% 
+              let avgScore = 5.0;
+              if (reviews && reviews.length > 0) {
+                const total = reviews.reduce((sum, r) => sum + r.rating, 0);
+                avgScore = (total / reviews.length).toFixed(1);
+              }
+            %>
+            <div class="tour-avg-badge">
+              <span class="avg-num"><%= avgScore %> / 5.0</span>
+              <span class="avg-label">Độ hài lòng</span>
+            </div>
+          </div>
+
+          <!-- Existing Reviews Feed -->
+          <div class="tour-reviews-feed" style="margin-top: 1.5rem;">
+            <% if (!reviews || reviews.length === 0) { %>
+              <p class="text-muted" style="padding: 1rem 0;">Chưa có đánh giá nào cho tour này. Hãy là người đầu tiên để lại cảm nhận!</p>
+            <% } else { %>
+              <% reviews.forEach(r => { %>
+              <div class="tour-review-box">
+                <div class="tr-top">
+                  <div>
+                    <strong><%= r.customer_name %></strong>
+                    <span class="verified-pill" style="margin-left: 6px;">Đã đi tour</span>
+                  </div>
+                  <div class="tr-score"><%= r.rating %>.0 / 5.0</div>
+                </div>
+                <div class="tr-date text-muted"><%= new Date(r.travel_date || r.created_at).toLocaleDateString('vi-VN') %></div>
+                <p class="tr-comment"><%= r.comment %></p>
+              </div>
+              <% }) %>
+            <% } %>
+          </div>
+
+          <!-- Add Review Form -->
+          <div class="tour-review-form-wrap" style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <h3>Gửi Đánh Giá Của Bạn Cho Tour Này</h3>
+            <form action="/reviews" method="POST" style="margin-top: 1rem;">
+              <input type="hidden" name="tour_id" value="<%= tour.id %>" />
+              <input type="hidden" name="redirect_tour" value="1" />
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="rev_name">Họ và tên <span class="required">*</span></label>
+                  <input type="text" id="rev_name" name="customer_name" required placeholder="Họ và tên của bạn" class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label for="rev_rating">Đánh giá <span class="required">*</span></label>
+                  <select id="rev_rating" name="rating" required class="form-select">
+                    <option value="5" selected>★★★★★ (5 sao — Tuyệt vời)</option>
+                    <option value="4">★★★★☆ (4 sao — Rất tốt)</option>
+                    <option value="3">★★★☆☆ (3 sao — Hài lòng)</option>
+                    <option value="2">★★☆☆☆ (2 sao — Trung bình)</option>
+                    <option value="1">★☆☆☆☆ (1 sao — Chưa tốt)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:1rem;">
+                <label for="rev_comment">Nhận xét chi tiết <span class="required">*</span></label>
+                <textarea id="rev_comment" name="comment" required rows="3" placeholder="Chia sẻ về chuyến đi, hướng dẫn viên, nơi ở, dịch vụ..." class="form-textarea"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-sm">Gửi Nhận Xét</button>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -42,7 +129,7 @@
           <div class="price-big"><%= parseInt(tour.price).toLocaleString('vi-VN') %> ₫</div>
           <div class="price-per">/ người</div>
 
-          <h3 style="margin-top:1.5rem">🗓 Lịch Khởi Hành</h3>
+          <h3 style="margin-top:1.5rem">Lịch Khởi Hành</h3>
           <% if (schedules.length === 0) { %>
             <div class="alert alert-warning">Hiện chưa có lịch khởi hành. Vui lòng liên hệ để biết thêm.</div>
           <% } else { %>
@@ -50,7 +137,7 @@
             <% schedules.forEach(sch => { %>
             <div class="schedule-item">
               <div class="schedule-date">
-                📅 <%= new Date(sch.departure_date).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                Khởi hành: <%= new Date(sch.departure_date).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' }) %>
               </div>
               <div class="schedule-slots"><%= sch.available_slots %> chỗ còn</div>
               <a href="/bookings/new?schedule_id=<%= sch.id %>" class="btn btn-primary btn-sm" style="width:100%;text-align:center">Đặt Ngay</a>
@@ -61,13 +148,13 @@
         </div>
 
         <div class="card">
-          <h3>✅ Bao Gồm</h3>
+          <h3>Dịch Vụ Bao Gồm</h3>
           <ul class="include-list">
-            <li>✔ Xe đưa đón theo lịch trình</li>
-            <li>✔ Khách sạn tiêu chuẩn</li>
-            <li>✔ Hướng dẫn viên tiếng Việt</li>
-            <li>✔ Bảo hiểm du lịch</li>
-            <li>✔ Ăn sáng mỗi ngày</li>
+            <li>Xe đưa đón theo lịch trình</li>
+            <li>Khách sạn tiêu chuẩn</li>
+            <li>Hướng dẫn viên tiếng Việt</li>
+            <li>Bảo hiểm du lịch</li>
+            <li>Ăn sáng mỗi ngày</li>
           </ul>
         </div>
       </div>

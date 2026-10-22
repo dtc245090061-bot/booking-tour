@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Đội Ngũ Hướng Dẫn Viên Du Lịch</h1>
+      <p class="page-subtitle">Những người đồng hành chuyên nghiệp, tận tâm và giàu trải nghiệm trên từng cung đường Việt Nam</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      
+      <!-- Key Stats Bar -->
+      <div class="guides-stats-bar">
+        <div class="guide-stat-box">
+          <div class="guide-stat-num">100%</div>
+          <div class="guide-stat-label">Thẻ Hướng Dẫn Viên Tổng Cục Du Lịch</div>
+        </div>
+        <div class="guide-stat-box">
+          <div class="guide-stat-num">1.200+</div>
+          <div class="guide-stat-label">Chuyến Đi Đã Khởi Hành Thành Công</div>
+        </div>
+        <div class="guide-stat-box">
+          <div class="guide-stat-num">4.9 / 5.0</div>
+          <div class="guide-stat-label">Điểm Đánh Giá Từ Hơn 15.000 Du Khách</div>
+        </div>
+        <div class="guide-stat-box">
+          <div class="guide-stat-num">24/7</div>
+          <div class="guide-stat-label">Hỗ Trợ & Chăm Sóc Suốt Hành Trình</div>
+        </div>
+      </div>
+
+      <!-- Guides Grid -->
+      <div class="guides-grid">
+        <% guides.forEach(guide => { %>
+        <div class="guide-card">
+          <div class="guide-card-header">
+            <div class="guide-avatar-wrap">
+              <img src="/images/guides/guide-<%= guide.id %>.svg" alt="<%= guide.name %>" class="guide-avatar" onerror="this.src='/css/placeholder.jpg'" />
+            </div>
+            <div class="guide-meta-top">
+              <span class="guide-title-badge"><%= guide.title %></span>
+              <div class="guide-rating-pill">Đánh giá <%= guide.rating %> / 5.0</div>
+            </div>
+          </div>
+
+          <div class="guide-card-body">
+            <h3 class="guide-name"><%= guide.name %></h3>
+            
+            <div class="guide-info-list">
+              <div class="guide-info-row">
+                <span class="info-label">Kinh nghiệm:</span>
+                <strong class="info-val"><%= guide.experience %> (<%= guide.tours_led %> tour đã dẫn)</strong>
+              </div>
+              <div class="guide-info-row">
+                <span class="info-label">Tuyến chính:</span>
+                <span class="info-val"><%= guide.specialty %></span>
+              </div>
+              <div class="guide-info-row">
+                <span class="info-label">Ngoại ngữ:</span>
+                <span class="info-val"><%= guide.languages %></span>
+              </div>
+            </div>
+
+            <p class="guide-bio"><%= guide.bio %></p>
+
+            <div class="guide-actions">
+              <a href="/tours" class="btn btn-primary btn-sm">Xem Tour Phù Hợp</a>
+              <a href="/bookings/new" class="btn btn-primary btn-sm">Đặt Tour Ngay</a>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+
+      <!-- Commitment Section -->
+      <div class="guides-commitment-card">
+        <h3>Cam Kết Dịch Vụ Của Đội Ngũ TourViet</h3>
+        <p>Tất cả hướng dẫn viên của TourViet đều trải qua quy trình đào tạo khắt khe về sơ cấp cứu quốc tế, kỹ năng hoạt náo, xử lý tình huống linh hoạt và am tường sâu sắc lịch sử, văn hóa, ẩm thực tại từng địa phương.</p>
+        <div class="commitment-tags">
+          <span class="c-tag">Nhiệt Tình Chu Đáo</span>
+          <span class="c-tag">Đúng Giờ Tác Phong Chuẩn</span>
+          <span class="c-tag">Hỗ Trợ Chụp Ảnh Đẹp</span>
+          <span class="c-tag">Chăm Sóc Người Lớn & Trẻ Em</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

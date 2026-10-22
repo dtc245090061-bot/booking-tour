@@ -33,7 +33,7 @@ router.get('/new', async (req, res) => {
     let tour = null;
     if (schedule_id) {
       const result = await db.query(
-        `SELECT s.*, t.name as tour_name, t.price, t.destination, t.duration
+        `SELECT s.*, t.name as tour_name, t.price, t.destination, t.duration, t.image_url
          FROM schedules s JOIN tours t ON s.tour_id = t.id WHERE s.id = $1`,
         [schedule_id]
       );
@@ -42,10 +42,20 @@ router.get('/new', async (req, res) => {
         tour = result.rows[0];
       }
     }
+
+    const allSchedulesResult = await db.query(`
+      SELECT s.id as schedule_id, s.departure_date, s.available_slots,
+             t.id as tour_id, t.name as tour_name, t.price, t.destination, t.duration, t.image_url
+      FROM schedules s
+      JOIN tours t ON s.tour_id = t.id
+      ORDER BY t.name ASC, s.departure_date ASC
+    `);
+
     res.render('bookings/new', {
       title: 'Đặt Tour - TourViet',
       schedule,
       tour,
+      allSchedules: allSchedulesResult.rows || [],
     });
   } catch (err) {
     console.error('Error rendering booking form:', err);
@@ -58,7 +68,7 @@ router.post('/', async (req, res) => {
   const client = await db.connect();
   try {
     await client.query('BEGIN');
-    const { full_name, email, phone, schedule_id, num_people, notes } = req.body;
+    const { full_name, email, phone, schedule_id, num_people, notes, payment_method } = req.body;
 
     // Tạo hoặc tìm customer
     let customerResult = await client.query(
@@ -89,11 +99,22 @@ router.post('/', async (req, res) => {
 
     const totalPrice = parseFloat(schedule.price) * parseInt(num_people);
 
+    // Ghi nhận hình thức thanh toán vào ghi chú booking
+    const payMap = {
+      cash: 'Tiền mặt',
+      transfer: 'Chuyển khoản',
+      card: 'Quẹt thẻ'
+    };
+    const paymentLabel = payMap[payment_method] || (payment_method ? payment_method : 'Tiền mặt');
+    const finalNotes = notes && notes.trim()
+      ? `${notes.trim()} (Hình thức thanh toán: ${paymentLabel})`
+      : `Hình thức thanh toán: ${paymentLabel}`;
+
     // Tạo booking
     const bookingResult = await client.query(
       `INSERT INTO bookings (customer_id, schedule_id, num_people, total_price, notes, status)
        VALUES ($1, $2, $3, $4, $5, 'pending') RETURNING id`,
-      [customerId, schedule_id, num_people, totalPrice, notes || '']
+      [customerId, schedule_id, num_people, totalPrice, finalNotes]
     );
 
     // Trừ số chỗ

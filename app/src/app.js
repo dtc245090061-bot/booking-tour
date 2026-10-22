@@ -76,6 +76,8 @@ app.use('/', require('./routes/index'));
 app.use('/tours', require('./routes/tours'));
 app.use('/bookings', require('./routes/bookings'));
 app.use('/customers', require('./routes/customers'));
+app.use('/guides', require('./routes/guides'));
+app.use('/reviews', require('./routes/reviews'));
 
 // Prometheus metrics endpoint
 app.get('/metrics', async (req, res) => {

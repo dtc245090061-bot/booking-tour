@@ -44,10 +44,16 @@ router.get('/:id', async (req, res) => {
       'SELECT * FROM schedules WHERE tour_id = $1 AND departure_date >= CURRENT_DATE AND available_slots > 0 ORDER BY departure_date',
       [req.params.id]
     );
+    const reviewsResult = await db.query(
+      'SELECT * FROM reviews WHERE tour_id = $1 ORDER BY created_at DESC',
+      [req.params.id]
+    );
     res.render('tours/detail', {
       title: `${tourResult.rows[0].name} - TourViet`,
       tour: tourResult.rows[0],
       schedules: schedulesResult.rows,
+      reviews: reviewsResult.rows,
+      reviewed: req.query.reviewed === '1',
     });
   } catch (err) {
     console.error('Error fetching tour detail:', err);

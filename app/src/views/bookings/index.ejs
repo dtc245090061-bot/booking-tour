@@ -21,13 +21,13 @@
   <section class="section">
     <div class="container">
       <div class="table-actions">
-        <a href="/bookings/new" class="btn btn-primary">+ Tạo Đặt Chỗ Mới</a>
+        <a href="/bookings/new" class="btn btn-primary">Tạo Đặt Chỗ Mới</a>
         <div class="table-info"><%= bookings.length %> đặt chỗ</div>
       </div>
 
       <% if (bookings.length === 0) { %>
         <div class="empty-state">
-          <div class="empty-icon">📋</div>
+          <div class="empty-icon"></div>
           <h3>Chưa có đặt chỗ nào</h3>
           <a href="/tours" class="btn btn-primary">Xem danh sách tour để đặt ngay</a>
         </div>
@@ -58,19 +58,19 @@
               </td>
               <td>
                 <div><%= b.tour_name %></div>
-                <small class="text-muted">📍 <%= b.destination %></small>
+                <small class="text-muted"><%= b.destination %></small>
               </td>
               <td><%= new Date(b.departure_date).toLocaleDateString('vi-VN') %></td>
               <td><%= b.num_people %> người</td>
               <td><strong><%= parseInt(b.total_price).toLocaleString('vi-VN') %> ₫</strong></td>
               <td>
                 <span class="status-badge status-<%= b.status %>">
-                  <%= b.status === 'pending' ? '⏳ Chờ xác nhận' : b.status === 'confirmed' ? '✅ Đã xác nhận' : '❌ Đã hủy' %>
+                  <%= b.status === 'pending' ? 'Chờ xác nhận' : b.status === 'confirmed' ? 'Đã xác nhận' : 'Đã hủy' %>
                 </span>
               </td>
               <td>
                 <div class="action-buttons">
-                  <a href="/bookings/<%= b.id %>" class="btn btn-ghost btn-xs">Chi tiết</a>
+                  <a href="/bookings/<%= b.id %>" class="btn btn-primary btn-xs">Chi tiết</a>
                   <form action="/bookings/<%= b.id %>/status?_method=PUT" method="POST" style="display:inline">
                     <% if (b.status === 'pending') { %>
                     <input type="hidden" name="status" value="confirmed" />

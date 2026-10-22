@@ -16,17 +16,16 @@
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-content container">
-      <div class="hero-badge">🌟 Hơn 50+ Tour Hấp Dẫn</div>
       <h1 class="hero-title">Khám Phá Việt Nam<br/><span class="gradient-text">Cùng TourViet</span></h1>
       <p class="hero-subtitle">Trải nghiệm những hành trình tuyệt vời, những vùng đất kỳ diệu và nền văn hóa đặc sắc của đất nước hình chữ S</p>
       <div class="hero-actions">
         <a href="/tours" class="btn btn-primary btn-lg">Xem Tất Cả Tour</a>
-        <a href="/bookings/new" class="btn btn-outline btn-lg">Đặt Tour Ngay</a>
+        <a href="/bookings/new" class="btn btn-primary btn-lg">Đặt Tour Ngay</a>
       </div>
       <!-- Search bar -->
       <div class="search-box">
         <form action="/tours" method="GET" class="search-form">
-          <input type="text" name="destination" placeholder="🔍 Tìm điểm đến (Hà Nội, Đà Nẵng, Phú Quốc...)" class="search-input" />
+          <input type="text" name="destination" placeholder="Tìm điểm đến (Hà Nội, Đà Nẵng, Phú Quốc...)" class="search-input" />
           <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
         </form>
       </div>
@@ -64,7 +63,7 @@
       </div>
       <% if (tours.length === 0) { %>
         <div class="empty-state">
-          <div class="empty-icon">🗺️</div>
+          <div class="empty-icon"></div>
           <p>Chưa có tour nào. Hệ thống đang khởi tạo dữ liệu...</p>
         </div>
       <% } else { %>
@@ -76,7 +75,7 @@
             <div class="tour-badge"><%= tour.duration %> ngày</div>
           </div>
           <div class="tour-body">
-            <div class="tour-destination">📍 <%= tour.destination %></div>
+            <div class="tour-destination"><%= tour.destination %></div>
             <h3 class="tour-name"><%= tour.name %></h3>
             <p class="tour-desc"><%= tour.description ? tour.description.substring(0, 100) + '...' : '' %></p>
             <div class="tour-footer">
@@ -91,9 +90,31 @@
         <% }) %>
       </div>
       <div class="section-footer">
-        <a href="/tours" class="btn btn-outline btn-lg">Xem Tất Cả Tour →</a>
+        <a href="/tours" class="btn btn-primary btn-lg">Xem Tất Cả Tour →</a>
       </div>
       <% } %>
+    </div>
+  </section>
+
+  <!-- Highlight Banner: Guides & Reviews -->
+  <section class="section" style="padding-top: 0;">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid var(--primary, #4f46e5);">
+          <div>
+            <h3 style="color: var(--text); margin-bottom: 0.5rem;">Đội Ngũ Hướng Dẫn Viên</h3>
+            <p class="text-muted" style="margin-bottom: 1.25rem; font-size: 0.92rem; line-height: 1.5;">Hơn 50 hướng dẫn viên chuyên nghiệp, giàu trải nghiệm, được cấp thẻ chuẩn Tổng cục Du lịch, tận tình chu đáo trên mọi cung đường.</p>
+          </div>
+          <a href="/guides" class="btn btn-primary btn-sm" style="align-self: flex-start;">Gặp Gỡ Hướng Dẫn Viên →</a>
+        </div>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid #10b981;">
+          <div>
+            <h3 style="color: var(--text); margin-bottom: 0.5rem;">Đánh Giá Thực Tế Từ Du Khách</h3>
+            <p class="text-muted" style="margin-bottom: 1.25rem; font-size: 0.92rem; line-height: 1.5;">Khám phá hàng nghìn nhận xét chân thực, độ hài lòng 4.9 / 5.0 từ cộng đồng du khách sau mỗi chuyến hành trình khám phá.</p>
+          </div>
+          <a href="/reviews" class="btn btn-primary btn-sm" style="align-self: flex-start;">Xem Đánh Giá Chuyến Đi →</a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -105,22 +126,18 @@
       </div>
       <div class="features-grid">
         <div class="feature-card">
-          <div class="feature-icon">🛡️</div>
           <h3>An Toàn & Đảm Bảo</h3>
           <p>Đội ngũ hướng dẫn viên chuyên nghiệp, phương tiện đạt chuẩn an toàn</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">💰</div>
           <h3>Giá Tốt Nhất</h3>
           <p>Cam kết hoàn tiền nếu bạn tìm được giá tốt hơn cho cùng chất lượng dịch vụ</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">📱</div>
           <h3>Đặt Tour Dễ Dàng</h3>
           <p>Đặt tour online chỉ trong vài bước đơn giản, xác nhận tức thì</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🌟</div>
           <h3>Trải Nghiệm Tuyệt Vời</h3>
           <p>Hơn 10 năm kinh nghiệm, mang đến những kỷ niệm đáng nhớ</p>
         </div>

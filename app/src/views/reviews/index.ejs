@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Đánh Giá Chuyến Đi</h1>
+      <p class="page-subtitle">Cảm nhận và chia sẻ chân thực từ những du khách đã đồng hành cùng TourViet</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <% if (success) { %>
+      <div class="alert alert-success" style="margin-bottom: 2rem;">
+        <strong>Cảm ơn bạn!</strong> Đánh giá chuyến đi của bạn đã được gửi thành công và ghi nhận vào hệ thống.
+      </div>
+      <% } %>
+
+      <!-- Rating Overview Box -->
+      <div class="reviews-summary-card">
+        <div class="summary-score-col">
+          <div class="score-number">4.9</div>
+          <div class="score-stars-text">Điểm hài lòng trung bình</div>
+          <div class="score-total">Dựa trên <%= reviews.length + 1240 %> lượt du khách đánh giá</div>
+        </div>
+        <div class="summary-bars-col">
+          <div class="rating-bar-row">
+            <span>5 sao</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 92%;"></div></div>
+            <span>92%</span>
+          </div>
+          <div class="rating-bar-row">
+            <span>4 sao</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 7%;"></div></div>
+            <span>7%</span>
+          </div>
+          <div class="rating-bar-row">
+            <span>3 sao</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 1%;"></div></div>
+            <span>1%</span>
+          </div>
+          <div class="rating-bar-row">
+            <span>2 sao</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
+            <span>0%</span>
+          </div>
+          <div class="rating-bar-row">
+            <span>1 sao</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 0%;"></div></div>
+            <span>0%</span>
+          </div>
+        </div>
+        <div class="summary-cta-col">
+          <h4>Bạn Vừa Hoàn Thành Chuyến Đi?</h4>
+          <p>Hãy chia sẻ cảm nhận để giúp các du khách khác lựa chọn hành trình ưng ý nhất!</p>
+          <a href="#newReviewForm" class="btn btn-primary btn-sm">Viết Đánh Giá Ngay</a>
+        </div>
+      </div>
+
+      <div class="reviews-layout">
+        <!-- Left: Reviews List -->
+        <div class="reviews-list-col">
+          <div class="section-heading-sm">
+            <h2>Tất Cả Đánh Giá Gần Đây (<%= reviews.length %>)</h2>
+          </div>
+
+          <div class="reviews-feed">
+            <% reviews.forEach(r => { %>
+            <div class="review-item-card">
+              <div class="review-header">
+                <div class="reviewer-avatar-wrap">
+                  <span class="reviewer-avatar"><%= r.customer_name.charAt(0).toUpperCase() %></span>
+                  <div class="reviewer-meta">
+                    <div class="reviewer-name">
+                      <%= r.customer_name %>
+                      <span class="verified-pill">Đã đi tour</span>
+                    </div>
+                    <div class="review-tour-name">
+                      Tour: <strong><%= r.tour_name %></strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="review-score-badge">
+                  <span class="score-val"><%= r.rating %>.0 / 5.0</span>
+                  <small class="review-date"><%= new Date(r.travel_date || r.created_at).toLocaleDateString('vi-VN') %></small>
+                </div>
+              </div>
+              <p class="review-comment-text"><%= r.comment %></p>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Right: Submit Form -->
+        <div class="reviews-form-col" id="newReviewForm">
+          <div class="card form-card">
+            <h3>Gửi Đánh Giá Của Bạn</h3>
+            <p class="text-muted" style="margin-bottom: 1.25rem; font-size: 0.9rem;">
+              Đóng góp của bạn giúp TourViet không ngừng hoàn thiện chất lượng dịch vụ.
+            </p>
+
+            <form action="/reviews" method="POST">
+              <div class="form-group">
+                <label for="tour_id">Chuyến tour đã tham gia <span class="required">*</span></label>
+                <select id="tour_id" name="tour_id" required class="form-select">
+                  <option value="">Chọn tour bạn đã đi</option>
+                  <% tours.forEach(t => { %>
+                  <option value="<%= t.id %>"><%= t.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="customer_name">Họ và tên của bạn <span class="required">*</span></label>
+                <input type="text" id="customer_name" name="customer_name" required placeholder="Ví dụ: Nguyễn Văn An" class="form-input" />
+              </div>
+
+              <div class="form-group">
+                <label for="rating">Mức độ hài lòng <span class="required">*</span></label>
+                <select id="rating" name="rating" required class="form-select">
+                  <option value="5" selected>★★★★★ (5 sao — Tuyệt vời, vượt mong đợi)</option>
+                  <option value="4">★★★★☆ (4 sao — Rất tốt, hài lòng)</option>
+                  <option value="3">★★★☆☆ (3 sao — Bình thường, đạt yêu cầu)</option>
+                  <option value="2">★★☆☆☆ (2 sao — Cần cải thiện)</option>
+                  <option value="1">★☆☆☆☆ (1 sao — Chưa hài lòng)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="travel_date">Ngày tham gia chuyến đi</label>
+                <input type="date" id="travel_date" name="travel_date" class="form-input" />
+              </div>
+
+              <div class="form-group">
+                <label for="comment">Chia sẻ cảm nhận chi tiết <span class="required">*</span></label>
+                <textarea id="comment" name="comment" required rows="4" placeholder="Cảm nhận về xe đưa đón, khách sạn, bữa ăn, sự chu đáo của hướng dẫn viên..." class="form-textarea"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-full">Gửi Đánh Giá Chuyến Đi</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

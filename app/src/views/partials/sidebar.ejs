@@ -1,0 +1,74 @@
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar-drawer" id="sidebarDrawer" aria-hidden="true">
+  <div class="sidebar-header">
+    <a href="/" class="logo">
+      <span class="logo-text">Tour<span class="accent">Viet</span></span>
+    </a>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button type="button" class="theme-toggle-btn theme-toggle-sidebar" id="sidebarThemeToggle"
+        aria-label="Đổi chế độ sáng / tối" title="Chuyển chế độ Sáng / Tối">
+        <span class="theme-icon-sun" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-icon-moon" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </span>
+      </button>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Đóng thanh điều hướng">✕</button>
+    </div>
+  </div>
+
+  <div class="sidebar-content">
+    <div class="sidebar-section-title">Danh Mục Chính</div>
+    <ul class="sidebar-nav">
+      <li><a href="/" class="sidebar-link">Trang Chủ</a></li>
+      <li><a href="/tours" class="sidebar-link">Danh Sách Tour</a></li>
+      <li><a href="/guides" class="sidebar-link">Hướng Dẫn Viên</a></li>
+      <li><a href="/reviews" class="sidebar-link">Đánh Giá Chuyến Đi</a></li>
+      <li><a href="/bookings/new" class="sidebar-link">Đặt Tour Trực Tuyến</a></li>
+      <li><a href="/bookings" class="sidebar-link">Quản Lý Đặt Chỗ</a></li>
+      <li><a href="/customers" class="sidebar-link">Khách Hàng</a></li>
+    </ul>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section-title">Hỗ Trợ Khách Hàng</div>
+    <div class="sidebar-contact-card">
+      <div class="contact-label">HotLine 24/7</div>
+      <div class="contact-phone">0349557320</div>
+      <div class="contact-label">Email: dtc245090061@ictu.edu.vn</div>
+      <div class="contact-label">Nhân Viên Hỗ Trợ:
+        Nguyễn Việt Tiến</div>
+    </div>
+
+    <div class="sidebar-divide  r"></div>
+
+    <div class="sidebar-section-title">Quản Trị Hệ Thống</div>
+    <ul class="sidebar-system-links">
+      <li><a href="/health" target="_blank">Kiểm Tra Sức Khỏe (Health Check)</a></li>
+      <li><a href="/metrics" target="_blank">Chỉ Số Prometheus (:3000/metrics)</a></li>
+      <li><a href="http://192.168.60.128:3000/d/tourviet-overview/tourviet-tong-quan-he-thong-and-web" target="_blank">Grafana Dashboard (:3000)</a></li>
+      <li><a href="http://192.168.60.128:5050" target="_blank">Quản Trị CSDL pgAdmin (:5050)</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <p>TourViet 2026</p>
+      <small>Hệ thống Đặt tour Du lịch Đa tầng</small>
+    </div>
+  </div>
+</aside>

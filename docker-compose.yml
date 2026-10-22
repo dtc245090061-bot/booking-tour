@@ -22,6 +22,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    # Hardening: no external port exposure
+    # Hardening: resource limits
     deploy:
       resources:
         limits:
@@ -75,6 +77,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    # Hardening: non-root user already set in Dockerfile
+    # Hardening: resource limits
     deploy:
       resources:
         limits:
@@ -131,6 +135,7 @@ services:
     networks:
       - monitoring
       - backend
+    # Hardening: non-root
     user: "65534:65534"
     deploy:
       resources:
@@ -160,6 +165,7 @@ services:
       - monitoring
     depends_on:
       - prometheus
+    # Hardening: non-root
     user: "472:472"
     deploy:
       resources:
@@ -198,6 +204,7 @@ services:
       - /:/rootfs:ro
     networks:
       - monitoring
+    # Hardening: non-root
     user: "65534:65534"
 
   postgres-exporter:
@@ -224,6 +231,37 @@ services:
       - frontend
     depends_on:
       - nginx
+
+  # ╔══════════════════════════════════════╗
+  # ║     LOGGING STACK                    ║
+  # ╚══════════════════════════════════════╝
+  loki:
+    image: grafana/loki:latest
+    container_name: booking-tour-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki_data:/loki
+    networks:
+      - monitoring
+    # Hardening: non-root
+    user: "10001:10001"
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: booking-tour-promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nginx_logs:/var/log/nginx:ro
+    networks:
+      - monitoring
+    depends_on:
+      - loki
 
 # ╔══════════════════════════════════════════╗
 # ║     NETWORKS (isolation - hardening)     ║
@@ -253,5 +291,7 @@ volumes:
     name: tourviet_grafana_data
   prometheus_data:
     name: tourviet_prometheus_data
+  loki_data:
+    name: tourviet_loki_data
   nginx_logs:
     name: tourviet_nginx_logs

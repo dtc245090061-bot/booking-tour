@@ -23,10 +23,10 @@
       <!-- Form -->
       <div class="booking-form-wrap">
         <div class="card">
-          <h2>📝 Thông Tin Đặt Tour</h2>
+          <h2>Thông Tin Đặt Tour</h2>
 
           <% if (typeof error !== 'undefined' && error) { %>
-          <div class="alert alert-danger"><strong>❌ Lỗi:</strong> <%= error %></div>
+          <div class="alert alert-danger"><strong>Lỗi:</strong> <%= error %></div>
           <% } %>
 
           <form action="/bookings" method="POST" class="booking-form" id="bookingForm">
@@ -35,7 +35,7 @@
             <% } %>
 
             <div class="form-section">
-              <h3>👤 Thông Tin Khách Hàng</h3>
+              <h3>Thông Tin Khách Hàng</h3>
               <div class="form-group">
                 <label for="full_name">Họ và tên *</label>
                 <input type="text" id="full_name" name="full_name" required placeholder="Nguyễn Văn A" class="form-input" />
@@ -53,17 +53,61 @@
             </div>
 
             <div class="form-section">
-              <h3>🗓 Thông Tin Đặt Chỗ</h3>
-              <% if (!schedule) { %>
+              <h3>Thông Tin Đặt Chỗ</h3>
+              
               <div class="form-group">
-                <label for="schedule_id">Mã lịch khởi hành *</label>
-                <input type="number" id="schedule_id" name="schedule_id" required placeholder="Nhập ID lịch khởi hành" class="form-input" />
-                <span class="form-hint">Vui lòng chọn tour và lịch khởi hành từ <a href="/tours">trang danh sách tour</a></span>
+                <label for="schedule_id">Chọn Tour & Lịch Khởi Hành <span class="required">*</span></label>
+                
+                <div class="searchable-select-wrap" id="tourSelectWrap">
+                  <div class="searchable-select-trigger" id="tourSelectTrigger" tabindex="0">
+                    <span id="tourSelectText"><%= tour && schedule ? (tour.tour_name + ' — ' + tour.destination + ' — Khởi hành: ' + new Date(schedule.departure_date).toLocaleDateString('vi-VN')) : 'Bấm vào đây để tìm và chọn tour' %></span>
+                    <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+
+                  <div class="searchable-select-dropdown" id="tourSelectDropdown">
+                    <div class="search-box-inside">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      <input type="text" id="tourSearchInput" placeholder="Tìm tour (Hạ Long, Sa Pa, Phú Quốc, Huế, Đà Lạt...)" autocomplete="off" />
+                    </div>
+
+                    <div class="options-container" id="tourOptionsList">
+                      <% (typeof allSchedules !== 'undefined' ? allSchedules : []).forEach(s => { %>
+                      <div class="select-option-item <%= (schedule && schedule.id === s.schedule_id) ? 'selected' : '' %>"
+                           data-id="<%= s.schedule_id %>"
+                           data-name="<%= s.tour_name %>"
+                           data-dest="<%= s.destination %>"
+                           data-price="<%= s.price %>"
+                           data-duration="<%= s.duration %>"
+                           data-date="<%= new Date(s.departure_date).toLocaleDateString('vi-VN') %>"
+                           data-slots="<%= s.available_slots %>"
+                           data-image="<%= s.image_url || '/images/tours/tour-1.jpg' %>">
+                        <div class="option-row-main">
+                          <strong class="opt-tour-name"><%= s.tour_name %></strong>
+                          <span class="opt-tour-badge">Còn <%= s.available_slots %> chỗ</span>
+                        </div>
+                        <div class="option-row-sub">
+                          <span>Điểm đến: <strong><%= s.destination %></strong> (<%= s.duration %> ngày)</span>
+                          <span>Khởi hành: <strong><%= new Date(s.departure_date).toLocaleDateString('vi-VN') %></strong></span>
+                          <span class="opt-tour-price"><%= parseInt(s.price).toLocaleString('vi-VN') %> ₫</span>
+                        </div>
+                      </div>
+                      <% }) %>
+                      <div class="no-options-item" id="noToursFound" style="display:none;">Không tìm thấy tour phù hợp</div>
+                    </div>
+                  </div>
+                </div>
+
+                <input type="hidden" id="schedule_id" name="schedule_id" value="<%= schedule ? schedule.id : '' %>" required />
+                <span class="form-hint">Bạn có thể gõ từ khóa để tìm kiếm nhanh theo địa danh hoặc tên tour du lịch</span>
               </div>
-              <% } %>
+
               <div class="form-group">
                 <label for="num_people">Số người *</label>
-                <input type="number" id="num_people" name="num_people" required min="1" max="<%= schedule ? schedule.available_slots : 20 %>" value="1" class="form-input" />
+                <input type="number" id="num_people" name="num_people" required min="1" max="50" value="1" class="form-input" />
               </div>
               <div class="form-group">
                 <label for="notes">Ghi chú</label>
@@ -71,55 +115,100 @@
               </div>
             </div>
 
+            <input type="hidden" id="unitPriceInput" value="<%= tour ? tour.price : 0 %>" />
+            <input type="hidden" id="paymentMethodInput" name="payment_method" value="cash" />
             <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBtn">
-              ✅ Xác Nhận Đặt Tour
+              Xác Nhận Đặt Tour
             </button>
           </form>
         </div>
       </div>
 
       <!-- Tour summary sidebar -->
-      <% if (tour) { %>
-      <div class="booking-sidebar">
+      <div class="booking-sidebar" id="bookingSidebar" style="<%= tour ? '' : 'display:none;' %>">
         <div class="card tour-summary">
-          <h3>📋 Thông Tin Tour</h3>
-          <img src="<%= tour.image_url || '/css/placeholder.jpg' %>" alt="<%= tour.tour_name %>" class="summary-img" onerror="this.src='/css/placeholder.jpg'" />
+          <h3>Thông Tin Tour</h3>
+          <img id="summaryImg" src="<%= tour ? (tour.image_url || '/images/tours/tour-5.jpg') : '/images/tours/tour-1.jpg' %>" alt="<%= tour ? tour.tour_name : 'TourViet' %>" class="summary-img" onerror="this.src='/images/tours/tour-1.jpg'" />
           <div class="summary-body">
-            <h4><%= tour.tour_name %></h4>
-            <p>📍 <%= tour.destination %></p>
-            <p>⏱ <%= tour.duration %> ngày</p>
-            <% if (schedule) { %>
-            <p>🗓 Khởi hành: <%= new Date(schedule.departure_date).toLocaleDateString('vi-VN') %></p>
-            <p>👥 Còn <%= schedule.available_slots %> chỗ trống</p>
-            <% } %>
+            <h4 id="summaryName"><%= tour ? tour.tour_name : '' %></h4>
+            <p>Điểm đến: <span id="summaryDest"><%= tour ? tour.destination : '' %></span></p>
+            <p>Thời gian: <span id="summaryDuration"><%= tour ? tour.duration : '' %></span> ngày</p>
+            <p>Khởi hành: <span id="summaryDate"><%= schedule ? new Date(schedule.departure_date).toLocaleDateString('vi-VN') : '' %></span></p>
+            <p id="summarySlots">Còn <%= schedule ? schedule.available_slots : '' %> chỗ trống</p>
             <div class="summary-price">
               <span>Giá/người:</span>
-              <strong><%= parseInt(tour.price).toLocaleString('vi-VN') %> ₫</strong>
+              <strong id="summaryPriceText"><%= tour ? parseInt(tour.price).toLocaleString('vi-VN') + ' ₫' : '0 ₫' %></strong>
             </div>
             <div class="total-calc" id="totalCalc">
               <span>Tổng tiền dự kiến:</span>
-              <strong id="totalPrice"><%= parseInt(tour.price).toLocaleString('vi-VN') %> ₫</strong>
+              <strong id="totalPrice"><%= tour ? parseInt(tour.price).toLocaleString('vi-VN') + ' ₫' : '0 ₫' %></strong>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="payment-methods-box">
+              <h4>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-light)">
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+                Hình Thức Thanh Toán
+              </h4>
+              <div class="payment-buttons-grid">
+                <button type="button" class="btn btn-payment active" data-method="cash" id="btnPayCash">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <path d="M6 12h.01M18 12h.01"></path>
+                  </svg>
+                  <span>Tiền mặt</span>
+                </button>
+                <button type="button" class="btn btn-payment" data-method="transfer" id="btnPayTransfer">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18"></path>
+                    <path d="M3 10h18"></path>
+                    <path d="M5 6l7-3 7 3"></path>
+                    <path d="M4 10v11"></path>
+                    <path d="M20 10v11"></path>
+                    <path d="M8 14v4"></path>
+                    <path d="M12 14v4"></path>
+                    <path d="M16 14v4"></path>
+                  </svg>
+                  <span>Chuyển khoản</span>
+                </button>
+                <button type="button" class="btn btn-payment" data-method="card" id="btnPayCard">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                  </svg>
+                  <span>Quẹt thẻ</span>
+                </button>
+              </div>
+
+              <div class="payment-desc-card">
+                <div class="pay-desc-item" id="descCash">
+                  <strong>Thanh toán tiền mặt:</strong> Quý khách thanh toán trực tiếp tại văn phòng TourViet hoặc cho hướng dẫn viên khi bắt đầu chuyến đi.
+                </div>
+                <div class="pay-desc-item" id="descTransfer" style="display:none;">
+                  <strong>Chuyển khoản ngân hàng (VietQR 24/7):</strong>
+                  <div class="pay-bank-details">
+                    <div>• Ngân hàng: <strong>MBBank / Vietcombank</strong></div>
+                    <div>• Số tài khoản: <strong>0349557320</strong></div>
+                    <div>• Chủ tài khoản: <strong>NGUYEN VIET TIEN</strong></div>
+                    <div>• Nội dung: <strong>Họ tên + Mã đặt tour</strong></div>
+                  </div>
+                </div>
+                <div class="pay-desc-item" id="descCard" style="display:none;">
+                  <strong>Quẹt thẻ POS:</strong> Hỗ trợ thanh toán qua thẻ ATM nội địa (Napas), thẻ tín dụng quốc tế Visa, MasterCard, JCB tại quầy vé hoặc máy POS cầm tay.
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <% } %>
     </div>
   </section>
 
   <%- include('../partials/footer') %>
-  <script>
-    // Tính tổng tiền động
-    const numPeopleInput = document.getElementById('num_people');
-    const totalPriceEl = document.getElementById('totalPrice');
-    const unitPrice = <%= tour ? tour.price : 0 %>;
-    if (numPeopleInput && totalPriceEl && unitPrice) {
-      numPeopleInput.addEventListener('input', () => {
-        const total = unitPrice * parseInt(numPeopleInput.value || 1);
-        totalPriceEl.textContent = total.toLocaleString('vi-VN') + ' ₫';
-      });
-    }
-  </script>
   <script src="/js/main.js"></script>
 </body>
 </html>
