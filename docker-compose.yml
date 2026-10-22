@@ -103,6 +103,7 @@ services:
       - frontend
     depends_on:
       - app
+      - grafana
       - pgadmin
     volumes:
       - nginx_logs:/var/log/nginx
@@ -111,6 +112,118 @@ services:
         limits:
           memory: 128m
           cpus: '0.2'
+
+  # ╔══════════════════════════════════════╗
+  # ║     MONITORING STACK                 ║
+  # ╚══════════════════════════════════════╝
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: booking-tour-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - monitoring
+      - backend
+    user: "65534:65534"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: '0.5'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: booking-tour-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_SERVER_ROOT_URL: https://%(domain)s/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+    networks:
+      - frontend
+      - monitoring
+    depends_on:
+      - prometheus
+    user: "472:472"
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: '0.3'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: booking-tour-cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - monitoring
+    privileged: true
+    devices:
+      - /dev/kmsg
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: booking-tour-node-exporter
+    restart: unless-stopped
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - monitoring
+    user: "65534:65534"
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: booking-tour-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_ADMIN_USER}:${DB_ADMIN_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable"
+    networks:
+      - monitoring
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: booking-tour-nginx-exporter
+    restart: unless-stopped
+    command:
+      - '-nginx.scrape-uri=http://nginx/stub_status'
+    networks:
+      - monitoring
+      - frontend
+    depends_on:
+      - nginx
 
 # ╔══════════════════════════════════════════╗
 # ║     NETWORKS (isolation - hardening)     ║
@@ -123,6 +236,10 @@ networks:
     driver: bridge
     name: tourviet_backend
     internal: true        # No external access (hardening)
+  monitoring:
+    driver: bridge
+    name: tourviet_monitoring
+    internal: true        # No external access (hardening)
 
 # ╔══════════════════════════════════════╗
 # ║     VOLUMES                          ║
@@ -132,5 +249,9 @@ volumes:
     name: tourviet_postgres_data
   pgadmin_data:
     name: tourviet_pgadmin_data
+  grafana_data:
+    name: tourviet_grafana_data
+  prometheus_data:
+    name: tourviet_prometheus_data
   nginx_logs:
     name: tourviet_nginx_logs
