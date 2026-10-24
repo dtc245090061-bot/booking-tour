@@ -11,8 +11,15 @@
 <body>
   <%- include('../partials/navbar') %>
 
-  <div class="page-header">
+  <div class="page-header header-reviews">
     <div class="container">
+      <a href="/" class="breadcrumb">
+        <svg class="breadcrumb-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>← Quay lại trang ban đầu</span>
+      </a>
       <h1 class="page-title">Đánh Giá Chuyến Đi</h1>
       <p class="page-subtitle">Cảm nhận và chia sẻ chân thực từ những du khách đã đồng hành cùng TourViet</p>
     </div>
@@ -129,11 +136,11 @@
               <div class="form-group">
                 <label for="rating">Mức độ hài lòng <span class="required">*</span></label>
                 <select id="rating" name="rating" required class="form-select">
-                  <option value="5" selected>★★★★★ (5 sao — Tuyệt vời, vượt mong đợi)</option>
-                  <option value="4">★★★★☆ (4 sao — Rất tốt, hài lòng)</option>
-                  <option value="3">★★★☆☆ (3 sao — Bình thường, đạt yêu cầu)</option>
-                  <option value="2">★★☆☆☆ (2 sao — Cần cải thiện)</option>
-                  <option value="1">★☆☆☆☆ (1 sao — Chưa hài lòng)</option>
+                  <option value="5" selected>★★★★★</option>
+                  <option value="4">★★★★☆</option>
+                  <option value="3">★★★☆☆</option>
+                  <option value="2">★★☆☆☆</option>
+                  <option value="1">★☆☆☆☆</option>
                 </select>
               </div>
 

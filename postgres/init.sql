@@ -163,7 +163,6 @@ INSERT INTO tours (name, destination, duration, price, max_slots, description, i
   ('Phong Nha Kẻ Bàng - Động Thiên Đường Kỳ Vĩ', 'Quảng Bình', 3, 2600000,
    20, 'Khám phá hang động thạch nhũ tráng lệ bậc nhất hoàng cung trong lòng đất tại Động Thiên Đường, chèo thuyền kayak suối Nước Moọc.',
    '/images/tours/tour-16.jpg');
-ON CONFLICT DO NOTHING;
 
 -- Insert schedules for each tour
 INSERT INTO schedules (tour_id, departure_date, available_slots)
@@ -213,8 +212,7 @@ INSERT INTO bookings (customer_id, schedule_id, num_people, total_price, status)
 SELECT c.id, s.id, 2, t.price * 2, 'confirmed'
 FROM customers c, schedules s, tours t
 WHERE c.email = 'minh.nguyen@email.com' AND s.tour_id = t.id AND t.id = 1
-LIMIT 1
-ON CONFLICT DO NOTHING;
+LIMIT 1;
 
 -- Seed Tour Guides (Hướng dẫn viên du lịch)
 INSERT INTO guides (name, title, experience, specialty, languages, rating, tours_led, bio, avatar_url) VALUES

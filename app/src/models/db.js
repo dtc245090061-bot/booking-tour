@@ -1,14 +1,15 @@
+require('dotenv').config();
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  host: process.env.DB_HOST || 'postgres',
+  host: process.env.DB_HOST || '192.168.60.128',
   port: parseInt(process.env.DB_PORT) || 5432,
   database: process.env.DB_NAME || 'booking_tour',
-  user: process.env.DB_USER || 'tourapp',
-  password: process.env.DB_PASSWORD,
+  user: process.env.DB_USER || process.env.DB_ADMIN_USER || 'postgres',
+  password: process.env.DB_PASSWORD || process.env.DB_ADMIN_PASSWORD || 'P@stgr3s#Admin2024!Secure',
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 1500,
+  connectionTimeoutMillis: 5000,
 });
 
 pool.on('error', (err) => {
@@ -617,7 +618,7 @@ async function executeQuery(sql, params) {
     return res;
   } catch (err) {
     if (usePg === null || usePg === true) {
-      console.log('ℹ️ PostgreSQL not reachable, activating in-memory database fallback.');
+      console.log('ℹ️ PostgreSQL not reachable, activating in-memory database fallback. Error:', err.message);
       usePg = false;
     }
     return executeInMemoryQuery(sql, params);

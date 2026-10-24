@@ -11,11 +11,11 @@ WORKDIR /app
 # Security: create non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nodeapp -u 1001
 
-# Copy node_modules from builder
-COPY --from=builder /app/node_modules ./node_modules
-
 # Copy application source
 COPY --chown=nodeapp:nodejs . .
+
+# Copy node_modules from builder
+COPY --chown=nodeapp:nodejs --from=builder /app/node_modules ./node_modules
 
 # Switch to non-root user (hardening)
 USER nodeapp

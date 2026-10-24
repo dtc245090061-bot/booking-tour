@@ -3,6 +3,7 @@
 <aside class="sidebar-drawer" id="sidebarDrawer" aria-hidden="true">
   <div class="sidebar-header">
     <a href="/" class="logo">
+      <img src="/images/logo.png" alt="Logo" class="brand-logo-img" />
       <span class="logo-text">Tour<span class="accent">Viet</span></span>
     </a>
     <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -56,13 +57,14 @@
         Nguyễn Việt Tiến</div>
     </div>
 
-    <div class="sidebar-divide  r"></div>
+    <div class="sidebar-divider"></div>
 
     <div class="sidebar-section-title">Quản Trị Hệ Thống</div>
     <ul class="sidebar-system-links">
       <li><a href="/health" target="_blank">Kiểm Tra Sức Khỏe (Health Check)</a></li>
       <li><a href="/metrics" target="_blank">Chỉ Số Prometheus (:3000/metrics)</a></li>
-      <li><a href="http://192.168.60.128:3000/d/tourviet-overview/tourviet-tong-quan-he-thong-and-web" target="_blank">Grafana Dashboard (:3000)</a></li>
+      <li><a href="http://192.168.60.128:9090" target="_blank">Prometheus Dashboard (:9090)</a></li>
+      <li><a href="http://192.168.60.128:3000/d/tourviet-toan-dien/tourviet-20-giam-sat-he-thong-toan-dien" target="_blank">Grafana Dashboard (:3000)</a></li>
       <li><a href="http://192.168.60.128:5050" target="_blank">Quản Trị CSDL pgAdmin (:5050)</a></li>
     </ul>
 

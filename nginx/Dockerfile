@@ -19,4 +19,4 @@ RUN chown -R nginx:nginx /var/log/nginx /var/cache/nginx && \
 EXPOSE 80 443
 
 HEALTHCHECK --interval=30s --timeout=5s \
-  CMD wget -qO- http://localhost/health || exit 1
+  CMD wget -qO- http://localhost/stub_status || exit 1
